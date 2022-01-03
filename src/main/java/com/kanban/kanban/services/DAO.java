@@ -7,10 +7,9 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-
 import com.kanban.kanban.exceptions.CreateKanbanBoardException;
 import com.kanban.kanban.exceptions.CreateKanbanDemandException;
-import com.kanban.kanban.exceptions.ReadKanbanDemandException;
+import com.kanban.kanban.exceptions.DeleteKanbanBoardException;
 import com.kanban.kanban.exceptions.UpdateKanbanBoardException;
 import com.kanban.kanban.models.KanbanBoard;
 import com.kanban.kanban.models.KanbanDemand;
@@ -96,5 +95,27 @@ public class DAO {
 		return response;
 	
 	}
+	
+	public Response<KanbanBoard> deleteKanbanBoard(String idBoard){
+		
+		if(idBoard == null || "".equals(idBoard)) {
+			throw new DeleteKanbanBoardException("Error deleting KanbanBoard, ID entered invalid, please check consistency of this information.");
+		}
+		
+		template.remove(new Query(Criteria.where("id").is(idBoard)), KanbanBoard.class);
+		Response<KanbanBoard> response = new Response<KanbanBoard>();
+		response.setRegistersQuantity(template.count(new Query(), KanbanBoard.class));
+		KanbanBoard old = template.findOne(new Query(Criteria.where("id").is(idBoard)), KanbanBoard.class);
+		
+		if(old != null) {
+			throw new DeleteKanbanBoardException("Error deleting KanbanBoard, Unable to delete record with id " + idBoard);
+		}
+		
+		response.setEntityResponse(old);
+		return response;
+		
+	}
+	
+	
 	
 }
