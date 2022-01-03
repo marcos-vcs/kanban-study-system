@@ -36,6 +36,7 @@ public class KanbanController {
 		try {
 			
 			if(result.hasErrors()) {
+				System.out.println(result.getFieldError());
 				return new ResponseEntity<Response<KanbanBoard>>(HttpStatus.NOT_ACCEPTABLE);
 			}
 			
@@ -58,10 +59,10 @@ public class KanbanController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<Response<List<KanbanBoard>>> read(@RequestParam(required = false) int skip, @RequestParam(required = false) int limit, @RequestParam String kanbanBoardId){
+	public ResponseEntity<Response<List<KanbanBoard>>> read(@RequestParam(required = false) int skip, @RequestParam(required = false) int limit, @RequestParam(required = false) String kanbanBoardTitle, @RequestParam(required = false) String kanbanBoardId){
 		try {
 			
-			Response<List<KanbanBoard>> response = service.readKanbanBoard(skip, limit, kanbanBoardId);
+			Response<List<KanbanBoard>> response = service.readKanbanBoard(skip, limit,kanbanBoardTitle, kanbanBoardId);
 			return new ResponseEntity<Response<List<KanbanBoard>>>(response, HttpStatus.OK);
 			
 		}catch (ReadKanbanBoardException e) {
@@ -76,8 +77,13 @@ public class KanbanController {
 	}
 
 	@PutMapping
-	public ResponseEntity<Response<KanbanBoard>> update(@RequestBody KanbanBoard oldKanbanBoard){
+	public ResponseEntity<Response<KanbanBoard>> update(@Valid @RequestBody KanbanBoard oldKanbanBoard, BindingResult result){
 		try {
+			
+			if(result.hasErrors()) {
+				System.out.println(result.getFieldError());
+				return new ResponseEntity<Response<KanbanBoard>>(HttpStatus.NOT_ACCEPTABLE);
+			}
 			
 			Response<KanbanBoard> response = service.updateKanbanBoard(oldKanbanBoard);
 			return new ResponseEntity<Response<KanbanBoard>>(response, HttpStatus.OK);

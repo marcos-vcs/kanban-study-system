@@ -31,8 +31,8 @@ public class DAO {
 		}
 		
 		Response<KanbanBoard> response = new Response<KanbanBoard>();
-		response.setRegistersQuantity(template.count(new Query(), KanbanBoard.class));
 		response.setEntityResponse(template.save(newBoard));
+		response.setRegistersQuantity(template.count(new Query(), KanbanBoard.class));
 		return response;
 	}
 	
@@ -51,13 +51,16 @@ public class DAO {
 		
 	}
 
-	public Response<List<KanbanBoard>> readKanbanBoard(int skip, int limit, String boardTitle){
+	public Response<List<KanbanBoard>> readKanbanBoard(int skip, int limit, String boardTitle, String boardId){
 		
 		Response<List<KanbanBoard>> response = new Response<List<KanbanBoard>>();
 		
 		Query query = new Query();
+		
 		if(boardTitle != null) {
 			query.addCriteria(Criteria.where("title").is(boardTitle));
+		}else if(boardId != null) {
+			query.addCriteria(Criteria.where("id").is(boardId));
 		}
 		if(limit == 0) limit+=10;
 		query.skip(skip).limit(limit);
